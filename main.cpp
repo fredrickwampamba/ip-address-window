@@ -1,4 +1,8 @@
 #include <windows.h>
+#include <iostream>
+#include <fstream>
+#include <string.h>
+using namespace std;
 
 /* This is where all the input to the window goes to */
 LRESULT CALLBACK WndProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
@@ -41,17 +45,47 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		return 0;
 	}
 
-	hwnd = CreateWindowEx(WS_EX_CLIENTEDGE,"WindowClass","MY IP",WS_VISIBLE|WS_OVERLAPPEDWINDOW,
+	hwnd = CreateWindowEx(0,"WindowClass","MY IP ADDRESS",WS_VISIBLE,
 		CW_USEDEFAULT, /* x */
 		CW_USEDEFAULT, /* y */
 		300, /* width */
 		100, /* height */
-		NULL,NULL,hInstance,NULL);
+		HWND_DESKTOP,NULL,hInstance,NULL);
 
 	if(hwnd == NULL) {
 		MessageBox(NULL, "Window Creation Failed!","Error!",MB_ICONEXCLAMATION|MB_OK);
 		return 0;
 	}
+	
+	string line;
+	ifstream IPFile;
+	int offset; 
+	char* search0 = "IPv4 Address. . . . . . . . . . . :";      // search pattern
+	        
+	system("ipconfig > ip.txt");
+	
+	IPFile.open ("ip.txt"); 
+	if(IPFile.is_open())
+	{
+	   while(!IPFile.eof())
+	   {
+	   getline(IPFile,line);
+	   if ((offset = line.find(search0, 0)) != string::npos)
+	   {
+	//   IPv4 Address. . . . . . . . . . . : 1
+	//1234567890123456789012345678901234567890     
+	   line.erase(0,39);
+	   IPFile.close();
+	   }
+	}
+	}
+	
+	HDC hdc = GetDC(hwnd);
+	RECT rect;
+	GetClientRect(hwnd, &rect);
+//	char * text = line;
+	DrawTextA(hdc, line, line.length(), &rect, DT_CENTER);
+	ReleaseDC(hwnd,hdc);
 
 	/*
 		This is the heart of our program where all input is processed and 
