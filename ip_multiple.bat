@@ -32,9 +32,10 @@
 ::
 ::978f952a14a936cc963da21a135fa983
 @echo off
+setlocal EnableDelayedExpansion
 set ip_address_string="IPv4 Address"
-for /f "usebackq tokens=2 delims=:" %%f in (`ipconfig ^| findstr /c:%ip_address_string%`) do (
-    echo Your IP Address is: %%f
-    pause
+for /f "tokens=2 delims=:" %%f in ('ipconfig ^| findstr /c:%ip_address_string%') do (
+    set ip_address=%%f
+    echo Your IP Address is: !ip_address:~1!
 )
-timeout /t 30
+pause
